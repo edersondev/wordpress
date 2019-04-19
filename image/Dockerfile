@@ -7,6 +7,9 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN docker-php-ext-install pdo_mysql
 
+RUN a2enmod ext_filter
+RUN a2enmod headers
+
 RUN { \
     echo 'memory_limit = 2048M'; \
     echo 'post_max_size = 50M'; \
