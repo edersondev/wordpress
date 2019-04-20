@@ -37,9 +37,14 @@ RUN docker-php-ext-install redis \
 RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
   rm -rf /var/lib/apt/lists/*
 
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/ssl-cert-snakeoil.key -out /etc/ssl/certs/ssl-cert-snakeoil.pem -subj "/C=AT/ST=Vienna/L=Vienna/O=Security/OU=Development/CN=example.com"
+
 RUN a2enmod ext_filter
 RUN a2enmod headers
 RUN a2enmod expires
+RUN a2enmod ssl
+
+RUN a2ensite default-ssl
 
 RUN { \
     echo 'memory_limit = 2048M'; \
@@ -47,7 +52,6 @@ RUN { \
     echo 'upload_max_filesize = 50M'; \
     echo 'max_execution_time = 300'; \
     echo 'date.timezone = "America/Sao_Paulo"'; \
-    echo 'zlib.output_compression = On'; \
 } > /usr/local/etc/php/conf.d/extra-conf.ini
 
 RUN { \
@@ -59,6 +63,8 @@ RUN { \
 
 COPY wordpress /usr/src/wordpress
 RUN chown -R www-data:www-data /usr/src/wordpress
+
+EXPOSE 443
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["apache2-foreground"]

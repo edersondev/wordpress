@@ -4,6 +4,7 @@ services:
     image: wordpress:php7.3
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./codigo:/var/www/html
     environment:
@@ -14,8 +15,10 @@ services:
       WORDPRESS_DEBUG: 1
       WORDPRESS_CONFIG_EXTRA: |
         define('FS_METHOD', 'direct');
+        define('WP_CACHE', true);
     links:
       - dbmysql
+      - memcached
   dbmysql:
     image: mysql:5.7
     ports:
@@ -25,6 +28,10 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=1234x
       - MYSQL_DATABASE=wordpress
+  memcached:
+    image: memcached:1.5-alpine
+    ports:
+     - "11211:11211"
 volumes:
   dbdata:
 
