@@ -21,14 +21,14 @@ RUN docker-php-ext-install pdo_mysql \
   && docker-php-ext-enable igbinary
 
 # Instalação da extensão memcached
-RUN curl -L -o /tmp/memcached.tar.gz "https://github.com/php-memcached-dev/php-memcached/archive/v3.1.3.tar.gz" \
+RUN curl -kL -o /tmp/memcached.tar.gz "https://github.com/php-memcached-dev/php-memcached/archive/v3.1.3.tar.gz" \
   && mkdir -p /usr/src/php/ext/memcached \
   && tar -C /usr/src/php/ext/memcached -zxvf /tmp/memcached.tar.gz --strip 1 \
   && docker-php-ext-configure memcached --enable-memcached-igbinary --enable-memcached-json --enable-memcached-msgpack
 
 # Instalação da extensão redis
 RUN mkdir -p /usr/src/php/ext/redis \
-  && curl -L https://github.com/phpredis/phpredis/archive/4.3.0.tar.gz | tar xvz -C /usr/src/php/ext/redis --strip 1 \
+  && curl -kL https://github.com/phpredis/phpredis/archive/4.3.0.tar.gz | tar xvz -C /usr/src/php/ext/redis --strip 1 \
   && echo 'redis' >> /usr/src/php-available-exts
 
 RUN docker-php-ext-install redis \
@@ -43,13 +43,14 @@ RUN a2enmod ext_filter
 RUN a2enmod headers
 RUN a2enmod expires
 RUN a2enmod ssl
+RUN a2enmod http2
 
 RUN a2ensite default-ssl
 
 RUN { \
     echo 'memory_limit = 2048M'; \
-    echo 'post_max_size = 50M'; \
-    echo 'upload_max_filesize = 50M'; \
+    echo 'post_max_size = 2000M'; \
+    echo 'upload_max_filesize = 2000M'; \
     echo 'max_execution_time = 300'; \
     echo 'date.timezone = "America/Sao_Paulo"'; \
 } > /usr/local/etc/php/conf.d/extra-conf.ini
