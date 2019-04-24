@@ -1,7 +1,8 @@
 version: '3'
 services:
   webphp:
-    image: wordpress:php7.3
+    build: image/
+    image: edersondev/wordpress:php7.3
     ports:
       - "80:80"
       - "443:443"
@@ -9,13 +10,12 @@ services:
       - ./codigo:/var/www/html
     environment:
       WORDPRESS_DB_HOST: dbmysql
-      WORDPRESS_DB_USER: root
-      WORDPRESS_DB_PASSWORD: 1234x
-      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_NAME: ${MYSQL_DATABASE}
+      WORDPRESS_DB_USER: ${MYSQL_USER}
+      WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD}
       WORDPRESS_DEBUG: 1
       WORDPRESS_CONFIG_EXTRA: |
         define('FS_METHOD', 'direct');
-        define('WP_CACHE', true);
     links:
       - dbmysql
       - memcached
@@ -26,12 +26,13 @@ services:
     volumes:
       - dbdata:/var/lib/mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=1234x
-      - MYSQL_DATABASE=wordpress
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
   memcached:
     image: memcached:1.5-alpine
     ports:
      - "11211:11211"
 volumes:
   dbdata:
-
